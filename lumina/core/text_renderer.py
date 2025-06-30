@@ -51,7 +51,10 @@ class TextRenderer:
         font = style.get_font()
         
         # Use anti-aliased rendering for quality
-        return font.render(text, True, color)
+        surface = font.render(text, True, color)
+        
+        # Convert to optimal pixel format to prevent rendering issues
+        return surface.convert_alpha()
     
     @classmethod
     def _render_text_with_emojis(cls, text: str, style: Style, color: pygame.Color) -> pygame.Surface:
@@ -205,7 +208,8 @@ class TextRenderer:
             combined.blit(surface, (x_offset, y_offset))
             x_offset += surface.get_width()
         
-        return combined
+        # Convert to optimal format
+        return combined.convert_alpha()
     
     @classmethod
     def get_text_size(cls, text: str, style: Style) -> Tuple[int, int]:
