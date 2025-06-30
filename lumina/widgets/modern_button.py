@@ -101,23 +101,26 @@ class ModernButton(Widget):
         return max(total_width, min_width), max(total_height, min_height)
     
     def _update_animations(self) -> None:
-        """Update animation states"""
+        """Update animation states - simplified to prevent text pulsing"""
         current_time = time.time()
         dt = current_time - self._last_update
         self._last_update = current_time
         
-        # Update hover animation
+        # Snap animations to target instantly to prevent render loops
+        # This fixes the text pulsing issue caused by constant invalidation
         target_hover = 1.0 if self._is_hovered and not self.disabled else 0.0
-        self._hover_animation += (target_hover - self._hover_animation) * self.animation_speed * dt
-        self._hover_animation = max(0.0, min(1.0, self._hover_animation))
-        
-        # Update press animation
         target_press = 1.0 if self._is_pressed and not self.disabled else 0.0
-        self._press_animation += (target_press - self._press_animation) * self.animation_speed * dt
-        self._press_animation = max(0.0, min(1.0, self._press_animation))
         
-        # Request redraw if animating
-        if abs(self._hover_animation - target_hover) > 0.01 or abs(self._press_animation - target_press) > 0.01:
+        # Store old values to check if we changed
+        old_hover = self._hover_animation
+        old_press = self._press_animation
+        
+        # Snap directly to target (no smooth animation for now to fix pulsing)
+        self._hover_animation = target_hover
+        self._press_animation = target_press
+        
+        # Only invalidate once when state actually changes
+        if (old_hover != self._hover_animation or old_press != self._press_animation):
             self.invalidate()
     
     def handle_event(self, event: pygame.event.Event) -> bool:
@@ -157,7 +160,8 @@ class ModernButton(Widget):
         if not self.visible:
             return
         
-        # Update animations
+        # Update animations only when state might have changed
+        # This prevents constant re-rendering that causes text pulsing
         self._update_animations()
         
         # Get theme colors
