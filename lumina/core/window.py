@@ -148,9 +148,10 @@ class Window:
     
     def render(self) -> None:
         """Render the window and all children"""
-        if not self._surface or not self._needs_redraw:
+        if not self._surface:
             return
         
+        # With double buffering, we need to redraw every frame
         # Clear background
         bg_color = self.theme.background_color
         if isinstance(bg_color, str):

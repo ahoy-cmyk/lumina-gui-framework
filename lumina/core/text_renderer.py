@@ -50,7 +50,7 @@ class TextRenderer:
         """Render text without emojis using system font"""
         font = style.get_font()
         
-        # Use clean anti-aliased rendering
+        # Use anti-aliased rendering for quality
         return font.render(text, True, color)
     
     @classmethod

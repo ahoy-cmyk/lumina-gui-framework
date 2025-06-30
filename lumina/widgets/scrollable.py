@@ -70,7 +70,16 @@ class ScrollableContainer(Container):
         if self.scroll_horizontal and content_width > safe_width:
             self.viewport_height -= self.scrollbar_width
         
-        return content_width, content_height
+        # Respect style height/width if set
+        final_width = safe_width
+        final_height = safe_height
+        
+        if self.style.height is not None:
+            final_height = self.style.height
+        if self.style.width is not None:
+            final_width = self.style.width
+            
+        return final_width, final_height
     
     def layout(self, rect: Rect) -> None:
         """Layout with scrolling support"""
