@@ -116,7 +116,9 @@ class Widget(ABC):
     
     def invalidate(self) -> None:
         """Mark widget as needing redraw"""
-        if self._window:
+        # Only invalidate if we have a window and we're actually mounted
+        # This prevents excessive invalidation during construction/teardown
+        if self._window and self._is_mounted:
             self._window.invalidate()
     
     def contains_point(self, x: float, y: float) -> bool:

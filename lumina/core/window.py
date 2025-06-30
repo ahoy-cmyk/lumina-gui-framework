@@ -46,6 +46,8 @@ class Window:
         self._mouse_pos = (0, 0)
         self._focused_widget: Optional[Widget] = None
         self._hovered_widget: Optional[Widget] = None
+        self._last_invalidate_time = 0.0
+        self._invalidate_throttle = 1.0 / 120.0  # Max 120fps invalidation
         
         # Event loop
         self._event_loop: Optional[asyncio.AbstractEventLoop] = None
@@ -76,7 +78,13 @@ class Window:
     
     def invalidate(self) -> None:
         """Mark window as needing redraw"""
-        self._needs_redraw = True
+        import time
+        current_time = time.time()
+        
+        # Throttle invalidation to prevent excessive redraws that cause text pulsing
+        if current_time - self._last_invalidate_time > self._invalidate_throttle:
+            self._needs_redraw = True
+            self._last_invalidate_time = current_time
     
     def set_theme(self, theme) -> None:
         """Update window theme and trigger complete redraw"""
@@ -181,7 +189,7 @@ class Window:
             self._mouse_pos = event.pos
             self._update_hover_state()
         
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]:
             # Find widget under mouse and send click event
             for child in reversed(self.children):
                 if child.visible and child.contains_point(*self._mouse_pos):
@@ -202,9 +210,10 @@ class Window:
                 break
         
         if new_hovered != self._hovered_widget:
-            # Update hover states
+            # Update hover states but don't invalidate entire window
+            # This prevents constant re-rendering that causes text pulsing
             self._hovered_widget = new_hovered
-            self.invalidate()
+            # Let individual widgets handle their own invalidation
     
     def run(self) -> None:
         """Run the window event loop"""

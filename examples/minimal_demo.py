@@ -22,10 +22,10 @@ def main():
     window = None
     
     def on_button_click():
-        print("Button clicked!")
+        print("🔥 BUTTON CLICKED! This should appear in console.")
     
     def on_theme_click():
-        print("Theme button clicked!")
+        print("🎨 THEME BUTTON CLICKED!")
         # Toggle theme
         current = window.theme
         if current == themes.default_light:

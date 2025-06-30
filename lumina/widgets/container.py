@@ -111,8 +111,16 @@ class Container(Widget):
         """Pass events to children"""
         # Check children in reverse order (top to bottom)
         for child in reversed(self.children):
-            if child.visible and child.handle_event(event):
-                return True
+            if child.visible:
+                # For mouse events, check if the child contains the point
+                if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP, pygame.MOUSEMOTION]:
+                    if hasattr(event, 'pos') and child.contains_point(*event.pos):
+                        if child.handle_event(event):
+                            return True
+                else:
+                    # For other events, pass them through
+                    if child.handle_event(event):
+                        return True
         return False
 
 
