@@ -49,24 +49,28 @@ class ScrollableContainer(Container):
     
     def calculate_size(self, available_width: float, available_height: float) -> tuple[float, float]:
         """Calculate size including scrollbars"""
+        # Handle infinity values that can cause issues
+        safe_width = available_width if available_width != float('inf') else 800
+        safe_height = available_height if available_height != float('inf') else 600
+        
         # Calculate content size
-        content_width, content_height = super().calculate_size(available_width, available_height)
+        content_width, content_height = super().calculate_size(safe_width, safe_height)
         
         # Store content dimensions
         self.content_width = content_width
         self.content_height = content_height
         
         # Calculate viewport size (excluding scrollbars)
-        self.viewport_width = available_width
-        self.viewport_height = available_height
+        self.viewport_width = safe_width
+        self.viewport_height = safe_height
         
-        if self.scroll_vertical and content_height > available_height:
+        if self.scroll_vertical and content_height > safe_height:
             self.viewport_width -= self.scrollbar_width
         
-        if self.scroll_horizontal and content_width > available_width:
+        if self.scroll_horizontal and content_width > safe_width:
             self.viewport_height -= self.scrollbar_width
         
-        return available_width, available_height
+        return content_width, content_height
     
     def layout(self, rect: Rect) -> None:
         """Layout with scrolling support"""
@@ -265,11 +269,15 @@ class ScrollableContainer(Container):
                 pygame.draw.rect(surface, bg_color, self.rect.to_pygame_rect())
         
         # Create clipping rectangle for content
+        # Sanitize viewport dimensions to prevent infinity conversion errors
+        safe_width = min(self.viewport_width, self.rect.width) if self.viewport_width != float('inf') else self.rect.width
+        safe_height = min(self.viewport_height, self.rect.height) if self.viewport_height != float('inf') else self.rect.height
+        
         viewport_rect = pygame.Rect(
-            self.rect.x,
-            self.rect.y,
-            int(self.viewport_width),
-            int(self.viewport_height)
+            int(self.rect.x),
+            int(self.rect.y),
+            int(safe_width),
+            int(safe_height)
         )
         
         # Set clipping

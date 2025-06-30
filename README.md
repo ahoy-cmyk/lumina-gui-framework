@@ -211,6 +211,8 @@ lumina/
 All major issues have been resolved:
 
 - ✅ **Text Quality** - Fixed fuzzy/blurry text rendering
+- ✅ **Text Pulsing** - Fixed text becoming fuzzy in consistent pulse pattern
+- ✅ **Button Clicks** - Fixed unresponsive button interactions
 - ✅ **Emoji Support** - Implemented via Unicode symbol mapping
 - ✅ **Scrollbars** - Fully functional with modern styling
 - ✅ **Theme Switching** - Working without window recreation
