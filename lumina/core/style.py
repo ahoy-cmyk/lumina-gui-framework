@@ -95,6 +95,14 @@ class Style:
         if not pygame.font.get_init():
             pygame.font.init()
         
+        # Check if we have a cached font for this exact style
+        cache_key = (self.font_family, self.font_size, self.font_weight, self.font_style)
+        if hasattr(self, '_font_cache') and cache_key in self._font_cache:
+            return self._font_cache[cache_key]
+        
+        if not hasattr(self, '_font_cache'):
+            self._font_cache = {}
+        
         # Map font weights to pygame font styles
         bold = self.font_weight in ["bold", "600", "700", "800", "900"]
         italic = self.font_style == "italic"
@@ -155,7 +163,11 @@ class Style:
         font_size = DisplayManager.scale_font_size(self.font_size)
         
         if font_name:
-            return pygame.font.SysFont(font_name, int(font_size), bold, italic)
+            font = pygame.font.SysFont(font_name, int(font_size), bold, italic)
         else:
             # Fallback to default font
-            return pygame.font.Font(None, int(font_size))
+            font = pygame.font.Font(None, int(font_size))
+        
+        # Cache the font for future use
+        self._font_cache[cache_key] = font
+        return font

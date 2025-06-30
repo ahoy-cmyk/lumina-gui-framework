@@ -77,17 +77,17 @@ class Text(Widget):
             self._rendered_text = TextRenderer.render_text(self.text, self.style, color)
             self._last_text = self.text
         
-        # Calculate position
-        x = self.rect.x + self.padding.left
-        y = self.rect.y + self.padding.top
+        # Calculate position with integer pixel alignment to prevent blur
+        x = int(self.rect.x + self.padding.left)
+        y = int(self.rect.y + self.padding.top)
         
         # Apply text alignment
         if self.style.text_align == "center":
-            x = self.rect.x + (self.rect.width - self._rendered_text.get_width()) // 2
+            x = int(self.rect.x + (self.rect.width - self._rendered_text.get_width()) // 2)
         elif self.style.text_align == "right":
-            x = self.rect.x + self.rect.width - self._rendered_text.get_width() - self.padding.right
+            x = int(self.rect.x + self.rect.width - self._rendered_text.get_width() - self.padding.right)
         
-        # Draw text
+        # Draw text at integer pixel position to prevent sub-pixel blur
         surface.blit(self._rendered_text, (x, y))
 
 

@@ -115,9 +115,8 @@ class Window:
             if hasattr(widget, '_button_surface'):
                 widget._button_surface = None
             
-            # Force widget to re-render
-            if hasattr(widget, 'invalidate'):
-                widget.invalidate()
+            # Don't call widget.invalidate() here as it creates invalidation loops
+            # The window invalidation will trigger re-render anyway
             
             # Recursively clear children
             if hasattr(widget, 'children') and widget.children:
@@ -230,15 +229,13 @@ class Window:
         # Scale window size for high DPI displays
         scaled_width, scaled_height = DisplayManager.scale_window_size(self.width, self.height)
         
-        # Create window with better quality
-        flags = pygame.RESIZABLE if self.resizable else 0
+        # Create window with double buffering to prevent flickering/pulsing
+        flags = pygame.DOUBLEBUF  # Always use double buffering
+        if self.resizable:
+            flags |= pygame.RESIZABLE
         
-        # Try to enable anti-aliasing and better rendering
-        try:
-            pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLEBUFFERS, 1)
-            pygame.display.gl_set_attribute(pygame.GL_MULTISAMPLESAMPLES, 4)
-        except:
-            pass  # Fallback if OpenGL not available
+        # Don't set OpenGL attributes unless using OpenGL surface
+        # This was causing rendering inconsistencies
         
         self._surface = pygame.display.set_mode((scaled_width, scaled_height), flags)
         pygame.display.set_caption(self.title)

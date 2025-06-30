@@ -199,24 +199,63 @@ lumina/
 └── examples/       # Demo applications
 ```
 
-## 📚 Documentation
+## 📚 API Reference
 
-- **[Architecture Guide](ARCHITECTURE.md)** - Framework design and patterns
-- **[Demo Status](DEMO_STATUS.md)** - Current demo status and features
-- **[macOS High DPI Guide](MACOS_HIGHDPI_GUIDE.md)** - High DPI setup
-- **[Comprehensive Guide](COMPREHENSIVE_GUIDE.md)** - Complete feature overview
+### Creating a Window
 
-## 🐛 Known Issues & Fixes
+```python
+window = Window(
+    title="My App",
+    width=800,
+    height=600,
+    theme=themes.default_light,
+    resizable=True,
+    children=[content]
+)
+```
 
-All major issues have been resolved:
+### Widget Styling
 
-- ✅ **Text Quality** - Fixed fuzzy/blurry text rendering
-- ✅ **Text Pulsing** - Fixed text becoming fuzzy in consistent pulse pattern
-- ✅ **Button Clicks** - Fixed unresponsive button interactions
-- ✅ **Emoji Support** - Implemented via Unicode symbol mapping
-- ✅ **Scrollbars** - Fully functional with modern styling
-- ✅ **Theme Switching** - Working without window recreation
-- ✅ **High DPI** - Proper scaling on all platforms
+```python
+# Using Style objects
+text = Text("Styled text", style=Style(
+    font_size=20,
+    font_weight="bold",
+    foreground_color="#FF0000"
+))
+
+# Using containers with padding
+container = Container(
+    children=[...],
+    padding=Padding.all(20)  # or Padding.symmetric(vertical=10, horizontal=20)
+)
+```
+
+### Event Handling
+
+```python
+def on_button_click():
+    print("Button clicked!")
+
+button = Button("Click me", on_click=on_button_click)
+```
+
+### Layout Components
+
+```python
+# Vertical layout
+Column([widget1, widget2, widget3], spacing=10)
+
+# Horizontal layout
+Row([widget1, widget2, widget3], spacing=10)
+
+# Scrollable content
+ScrollableContainer(
+    children=[...],
+    scroll_vertical=True,
+    scroll_horizontal=False
+)
+```
 
 ## 🤝 Contributing
 
